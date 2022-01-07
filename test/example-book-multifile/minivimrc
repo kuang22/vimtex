@@ -1,6 +1,6 @@
 set nocompatible
-set runtimepath^=../..
-set runtimepath+=../../after
+let &rtp  = '~/.vim/bundle/vimtex,' . &rtp
+let &rtp .= ',~/.vim/bundle/vimtex/after'
 filetype plugin indent on
 syntax enable
 
@@ -16,10 +16,6 @@ let g:vimtex_toc_todo_labels = {
       \ 'IMPORTANT': 'IMPORTANT: ',
       \ 'IMPORTANTE': 'IMPORTANT: ',
       \}
-
-" let g:vimtex_compiler_latexmk = {'build_dir': 'out'}
-let g:vimtex_view_automatic = 0
-let g:vimtex_quickfix_mode = 0
 
 augroup vimtex_customization
   autocmd!

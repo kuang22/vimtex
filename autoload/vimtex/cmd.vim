@@ -279,8 +279,7 @@ function! s:get_frac_cmd() abort " {{{1
       return {}
     endif
 
-    " Note: \dfrac is defined by amsmath and is a common variant
-    if index(['\frac', '\dfrac'], l:cmd.name) >= 0
+    if l:cmd.name ==# '\frac'
       break
     endif
 

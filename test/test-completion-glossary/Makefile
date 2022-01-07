@@ -1,6 +1,6 @@
 .PHONY: test $(TARGETS)
 
-MYVIM ?= nvim --clean --headless
+MYVIM ?= nvim --headless
 
 INMAKE := 1
 export INMAKE

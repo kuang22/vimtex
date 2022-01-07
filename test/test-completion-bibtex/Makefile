@@ -1,4 +1,4 @@
-MYVIM ?= nvim --clean --headless
+MYVIM ?= nvim --headless
 
 INMAKE := 1
 export INMAKE
@@ -8,15 +8,12 @@ TESTS := $(filter-out test_backend,$(TESTS:.vim=))
 BACKENDS := bibtex vim
 # BACKENDS := $(BACKENDS) bibparse bibtexparser
 
-.PHONY: test $(TESTS) $(BACKENDS) test-cleanup
+.PHONY: test $(TESTS) $(BACKENDS)
 
-test: $(TESTS) $(BACKENDS) test-cleanup
+test: $(TESTS) $(BACKENDS)
 
 $(TESTS):
 	@$(MYVIM) -u $@.vim
 
 $(BACKENDS):
 	@BACKEND=$@ $(MYVIM) -u test_backend.vim
-
-test-cleanup: $(TESTS_ALL)
-	@rm -f nvim_servernames.log

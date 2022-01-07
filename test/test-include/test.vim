@@ -17,20 +17,13 @@ call assert_equal('references.bib', expand('%'))
 silent normal! 
 call assert_equal('test.tex', expand('%'))
 
-normal! 11G
+normal! 3k
 silent normal! gf
 call assert_equal('sub/file2.tex', expand('%'))
 
-silent normal! 
+silent normal! kw
 call assert_equal('test.tex', expand('%'))
-silent normal! kwgf
+normal! gf
 call assert_equal('sub/file1.tex', expand('%'))
-
-call assert_equal([
-      \ 'test.tex',
-      \ 'sub/file1.tex',
-      \ 'sub/file2.tex',
-      \ 'sub/file3.tex',
-      \], b:vimtex.sources)
 
 call vimtex#test#finished()

@@ -25,15 +25,14 @@ function! vimtex#delim#init_buffer() abort " {{{1
   nnoremap <silent><buffer> <plug>(vimtex-delim-delete)
         \ :<c-u>call <sid>operator_setup('delete')<bar>normal! g@l<cr>
 
-  inoremap <silent><buffer><expr> <plug>(vimtex-delim-close)
-        \ vimtex#delim#close()
+  inoremap <silent><buffer> <plug>(vimtex-delim-close)
+        \ <c-r>=vimtex#delim#close()<cr>
 endfunction
 
 " }}}1
 
 function! vimtex#delim#close() abort " {{{1
   let l:save_pos = vimtex#pos#get_cursor()
-  let l:indent = g:vimtex_indent_enabled ? "\<c-f>" : ''
   let l:posval_cursor = vimtex#pos#val(l:save_pos)
   let l:posval_current = l:posval_cursor
   let l:posval_last = l:posval_cursor + 1
@@ -48,7 +47,7 @@ function! vimtex#delim#close() abort " {{{1
     let l:close = vimtex#delim#get_matching(l:open)
     if empty(l:close.match)
       call vimtex#pos#set_cursor(l:save_pos)
-      return l:open.corr . l:indent
+      return l:open.corr
     endif
 
     let l:posval_last = l:posval_current
@@ -57,7 +56,7 @@ function! vimtex#delim#close() abort " {{{1
     if l:posval_current != l:posval_cursor
           \ && l:posval_try > l:posval_cursor
       call vimtex#pos#set_cursor(l:save_pos)
-      return l:open.corr . l:indent
+      return l:open.corr
     endif
 
     call vimtex#pos#set_cursor(vimtex#pos#prev(l:open))

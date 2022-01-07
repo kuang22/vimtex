@@ -6,7 +6,7 @@ nnoremap q :qall!<cr>
 
 set nomore
 
-silent edit test-hbox.tex
+silent edit main.tex
 
 if empty($INMAKE) | finish | endif
 
@@ -18,10 +18,7 @@ catch /VimTeX: No log file found/
 endtry
 
 let s:qf = getqflist()
-call assert_equal(5, len(s:qf))
-call assert_equal('./test-hbox-1.tex', bufname(s:qf[1].bufnr))
-call assert_equal('./test-hbox-1.tex', bufname(s:qf[2].bufnr))
-call assert_equal('test-hbox-2.tex', bufname(s:qf[3].bufnr))
-call assert_equal('test-hbox-3.tex', bufname(s:qf[4].bufnr))
+call assert_true(len(s:qf) == 2)
+call assert_equal(bufname(s:qf[1].bufnr), './test.tex')"}}}
 
 call vimtex#test#finished()

@@ -1,10 +1,10 @@
 set nocompatible
 let &rtp = '../..,' . &rtp
-filetype plugin indent on
+filetype plugin on
 syntax on
 
-set shiftwidth=2
-set expandtab
+set nomore
+set autoindent
 
 setfiletype tex
 
@@ -30,7 +30,7 @@ call vimtex#test#keys('Go]]', [
       \ '    a = \stackunder{p6mm}{',
       \ '      \left\{ b \right.',
       \ '    }',
-      \ '  \end{array}',
+      \ '    \end{array}',
       \])
 
 " csc  /  Change surrounding command

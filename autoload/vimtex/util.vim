@@ -42,20 +42,15 @@ endfunction
 
 " }}}1
 function! vimtex#util#get_os() abort " {{{1
-  if vimtex#util#is_win()
+  if has('win32') || has('win32unix')
     return 'win'
   elseif has('unix')
-    if has('mac') || has('ios') || vimtex#jobs#cached('uname')[0] =~# 'Darwin'
+    if has('mac') || system('uname') =~# 'Darwin'
       return 'mac'
     else
       return 'linux'
     endif
   endif
-endfunction
-
-" }}}1
-function! vimtex#util#is_win() abort " {{{1
-  return has('win32') || has('win32unix')
 endfunction
 
 " }}}1

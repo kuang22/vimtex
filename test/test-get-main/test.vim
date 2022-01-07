@@ -56,8 +56,4 @@ call vimtex#test#main('test-bib-alternate/references.bib', '')
 execute 'silent edit' fnameescape('test-bib-alternate/main.tex')
 call vimtex#test#main('test-bib-alternate/references.bib', 'test-bib-alternate/main.tex')
 
-" Test standalone
-call vimtex#test#main('test-standalone/a/a.tex', 'test-standalone/main.tex')
-call vimtex#test#main('test-standalone/a/a.tex', 'test-standalone/a/a.tex', 1)
-
 call vimtex#test#finished()

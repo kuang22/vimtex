@@ -4,7 +4,8 @@ filetype plugin on
 
 nnoremap q :qall!<cr>
 
-let g:vimtex_cache_persistent = 0
+let g:vimtex_cache_root = '.'
+" let g:vimtex_cache_persistent = 0
 
 let g:vimtex_toc_custom_matchers = [
       \ { 'title' : 'My Custom Environment',
@@ -18,17 +19,19 @@ if empty($INMAKE) | finish | endif
 " profile start prof.log
 " profile func *
 
-let s:time = vimtex#profile#time()
+silent let s:time = str2float(system('date +"%s.%N"'))
 let s:toc = vimtex#toc#get_entries()
-let s:time = vimtex#profile#time(s:time, 'Time elapsed (1st run)')
+echo 'Time elapsed (1st run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 
 " profile pause
 " quit!
 
+let s:time = str2float(system('date +"%s.%N"'))
 let s:toc = vimtex#toc#get_entries()
-let s:time = vimtex#profile#time(s:time, 'Time elapsed (2nd run)')
+echo 'Time elapsed (2nd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 
+let s:time = str2float(system('date +"%s.%N"'))
 let s:toc = vimtex#toc#get_entries()
-let s:time = vimtex#profile#time(s:time, 'Time elapsed (3rd run)')
+echo 'Time elapsed (3rd run):' str2float(system('date +"%s.%N"')) - s:time "\n"
 
 quit!

@@ -25,7 +25,7 @@ endfunction
 " }}}1
 function! s:compiler.__build_cmd() abort dict " {{{1
   return 'arara ' . join(self.options)
-        \ . ' ' . vimtex#util#shellescape(self.state.base)
+        \ . ' ' . vimtex#util#shellescape(self.target)
 endfunction
 
 " }}}1

@@ -10,17 +10,6 @@ endfunction
 
 " }}}1
 
-function! vimtex#cache#path(name) abort " {{{1
-  let l:root = s:root()
-  if !isdirectory(l:root)
-    call mkdir(l:root, 'p')
-  endif
-
-  return vimtex#paths#join(l:root, a:name)
-endfunction
-
-" }}}1
-
 function! vimtex#cache#open(name, ...) abort " {{{1
   let l:opts = a:0 > 0 ? a:1 : {}
   let l:name = get(l:opts, 'local') ? s:local_name(a:name) : a:name
@@ -120,8 +109,13 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new = deepcopy(self)
   unlet new.init
 
+  let l:root = s:root()
+  if !isdirectory(l:root)
+    call mkdir(l:root, 'p')
+  endif
+
   let new.name = a:name
-  let new.path = vimtex#cache#path(a:name . '.json')
+  let new.path = l:root . '/' . a:name . '.json'
   let new.local = get(a:opts, 'local')
   let new.persistent = get(a:opts, 'persistent',
         \ get(g:, 'vimtex_cache_persistent', 1))
@@ -134,18 +128,11 @@ function! s:cache.init(name, opts) dict abort " {{{1
   let new.ftime = -1
   let new.modified = 0
 
-  " Validate cache
-  if new.persistent
-    let l:validation = get(a:opts, 'validate', s:_version)
-    if type(l:validation) == v:t_dict
-      let l:validation._version = s:_version
-    endif
+  if has_key(a:opts, 'validate')
     call new.read()
-    if !has_key(new.data, '__validate')
-          \ || type(new.data.__validate) != type(l:validation)
-          \ || new.data.__validate != l:validation
+    if get(new.data, '__validate', {}) != a:opts.validate
       call new.clear()
-      let new.data.__validate = deepcopy(l:validation)
+      let new.data.__validate = deepcopy(a:opts.validate)
       call new.write()
     endif
   endif
@@ -203,15 +190,8 @@ function! s:cache.read() dict abort " {{{1
 
   if getftime(self.path) > self.ftime
     let self.ftime = getftime(self.path)
-    let l:data = json_decode(join(readfile(self.path)))
-    if type(l:data) == v:t_dict
-      call extend(self.data, l:data, 'keep')
-    else
-      call vimtex#log#warning(
-            \ 'Inconsistent cache data while reading: ' . self.name,
-            \ 'Decoded data type: ' . type(l:data)
-            \)
-    endif
+    call extend(self.data,
+          \ json_decode(join(readfile(self.path))), 'keep')
   endif
 endfunction
 
@@ -250,6 +230,3 @@ function! s:local_name(name) abort " {{{1
 endfunction
 
 " }}}1
-
-
-let s:_version = 'cache_v0'

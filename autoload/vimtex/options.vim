@@ -18,6 +18,10 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_compiler_enabled', 1)
   call s:init_option('vimtex_compiler_silent', 0)
   call s:init_option('vimtex_compiler_method', 'latexmk')
+  call s:init_option('vimtex_compiler_progname',
+        \ has('nvim') && executable('nvr')
+        \   ? 'nvr'
+        \   : get(v:, 'progpath', get(v:, 'progname', '')))
   call s:init_option('vimtex_compiler_latexmk_engines', {})
   call s:init_option('vimtex_compiler_latexrun_engines', {})
 
@@ -194,6 +198,7 @@ function! vimtex#options#init() abort " {{{1
         \ { 'lhs' : 'w',  'rhs' : '\omega' },
         \ { 'lhs' : 'z',  'rhs' : '\zeta' },
         \ { 'lhs' : 'x',  'rhs' : '\xi' },
+        \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
         \ { 'lhs' : 'D',  'rhs' : '\Delta' },
         \ { 'lhs' : 'F',  'rhs' : '\Phi' },
         \ { 'lhs' : 'G',  'rhs' : '\Gamma' },
@@ -254,18 +259,6 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_labels_enabled', 1)
   call s:init_option('vimtex_labels_refresh_always', 1)
 
-
-  let s:chktexrc = (empty($XDG_CONFIG_HOME)
-        \ ? $HOME . '/.config'
-        \ : $XDG_CONFIG_HOME) . '/chktexrc'
-
-  call s:init_option('vimtex_lint_chktex_parameters',
-        \ filereadable(s:chktexrc)
-        \   ? '--localrc ' . shellescape(s:chktexrc)
-        \   : '')
-  call s:init_option('vimtex_lint_chktex_ignore_warnings',
-        \ '-n1 -n3 -n8 -n25 -n36')
-
   call s:init_option('vimtex_parser_bib_backend', 'bibtex')
 
   call s:init_option('vimtex_quickfix_enabled', 1)
@@ -280,25 +273,24 @@ function! vimtex#options#init() abort " {{{1
   call s:init_option('vimtex_subfile_start_local', 0)
 
   call s:init_option('vimtex_syntax_enabled', 1)
+  call s:init_option('vimtex_syntax_conceal_default', 1)
   call s:init_option('vimtex_syntax_conceal', {
-        \ 'accents': 1,
-        \ 'cites': 1,
-        \ 'fancy': 1,
-        \ 'greek': 1,
-        \ 'math_bounds': 1,
-        \ 'math_delimiters': 1,
-        \ 'math_fracs': 1,
-        \ 'math_super_sub': 1,
-        \ 'math_symbols': 1,
-        \ 'sections': 0,
-        \ 'styles': 1,
+        \ 'accents': g:vimtex_syntax_conceal_default,
+        \ 'cites': g:vimtex_syntax_conceal_default,
+        \ 'fancy': g:vimtex_syntax_conceal_default,
+        \ 'greek': g:vimtex_syntax_conceal_default,
+        \ 'math_bounds': g:vimtex_syntax_conceal_default,
+        \ 'math_delimiters': g:vimtex_syntax_conceal_default,
+        \ 'math_fracs': g:vimtex_syntax_conceal_default,
+        \ 'math_super_sub': g:vimtex_syntax_conceal_default,
+        \ 'math_symbols': g:vimtex_syntax_conceal_default,
+        \ 'styles': g:vimtex_syntax_conceal_default,
         \})
   call s:init_option('vimtex_syntax_conceal_cites', {
         \ 'type': 'brackets',
         \ 'icon': '📖',
         \ 'verbose': v:true,
         \})
-  call s:init_option('vimtex_syntax_conceal_disable', 0)
   call s:init_option('vimtex_syntax_custom_cmds', [])
   call s:init_option('vimtex_syntax_nested', {
         \ 'aliases' : {
@@ -327,19 +319,13 @@ function! vimtex#options#init() abort " {{{1
         \   ],
         \ }
         \})
+  call s:init_option('vimtex_syntax_nospell_commands', [])
   call s:init_option('vimtex_syntax_nospell_comments', 0)
   call s:init_option('vimtex_syntax_packages', {
         \ 'amsmath': {'load': 2},
-        \ 'babel': {'conceal': 1},
-        \ 'hyperref': {'conceal': 1},
+        \ 'babel': {'conceal': g:vimtex_syntax_conceal_default},
+        \ 'hyperref': {'conceal': g:vimtex_syntax_conceal_default},
         \})
-
-  " Disable conceals if chosen
-  if g:vimtex_syntax_conceal_disable
-    call map(g:vimtex_syntax_conceal, {k, v -> 0})
-    let g:vimtex_syntax_packages.babel.conceal = 0
-    let g:vimtex_syntax_packages.hyperref.conceal = 0
-  endif
 
   call s:init_option('vimtex_texcount_custom_arg', '')
 
@@ -389,6 +375,7 @@ function! vimtex#options#init() abort " {{{1
 
   call s:init_option('vimtex_view_enabled', 1)
   call s:init_option('vimtex_view_automatic', 1)
+  call s:init_option('vimtex_view_automatic_xwin', 1)
   call s:init_option('vimtex_view_method', 'general')
   call s:init_option('vimtex_view_use_temp_files', 0)
   call s:init_option('vimtex_view_forward_search_on_start', 1)
@@ -401,12 +388,16 @@ function! vimtex#options#init() abort " {{{1
       call s:init_option('vimtex_view_general_viewer', 'SumatraPDF')
       call s:init_option('vimtex_view_general_options',
             \ '-reuse-instance -forward-search @tex @line @pdf')
+      call s:init_option('vimtex_view_general_options_latexmk',
+            \ '-reuse-instance')
     elseif executable('mupdf')
       call s:init_option('vimtex_view_general_viewer', 'mupdf')
       call s:init_option('vimtex_view_general_options', '@pdf')
+      call s:init_option('vimtex_view_general_options_latexmk', '')
     else
       call s:init_option('vimtex_view_general_viewer', 'start')
       call s:init_option('vimtex_view_general_options', '@pdf')
+      call s:init_option('vimtex_view_general_options_latexmk', '')
     endif
   else
     call s:init_option('vimtex_view_general_viewer', get({
@@ -414,14 +405,13 @@ function! vimtex#options#init() abort " {{{1
           \ 'mac'   : 'open',
           \}, l:os, ''))
     call s:init_option('vimtex_view_general_options', '@pdf')
+    call s:init_option('vimtex_view_general_options_latexmk', '')
   endif
 
   call s:init_option('vimtex_view_mupdf_options', '')
   call s:init_option('vimtex_view_mupdf_send_keys', '')
-  call s:init_option('vimtex_view_sioyek_exe', 'sioyek')
   call s:init_option('vimtex_view_skim_activate', 0)
-  call s:init_option('vimtex_view_skim_sync', 0)
-  call s:init_option('vimtex_view_skim_reading_bar', 0)
+  call s:init_option('vimtex_view_skim_reading_bar', 1)
   call s:init_option('vimtex_view_zathura_options', '')
   call s:init_option('vimtex_view_zathura_check_libsynctex', 1)
 
@@ -474,8 +464,6 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_quickfix_latexlog',
         \ 'g:vimtex_quickfix_warnings',
         \ 'g:vimtex_syntax_autoload_packages',
-        \ 'g:vimtex_syntax_conceal_default',
-        \ 'g:vimtex_syntax_nospell_commands',
         \ 'g:vimtex_textidote_jar',
         \ 'g:vimtex_toc_fold',
         \ 'g:vimtex_toc_fold_level_start',
@@ -494,11 +482,9 @@ function! s:check_for_deprecated_options() abort " {{{1
         \ 'g:vimtex_toc_split_pos',
         \ 'g:vimtex_toc_tocdepth',
         \ 'g:vimtex_toc_width',
-        \ 'g:vimtex_view_automatic_xwin',
         \ 'g:vimtex_view_general_callback',
         \ 'g:vimtex_view_general_hook_callback',
         \ 'g:vimtex_view_general_hook_view',
-        \ 'g:vimtex_view_general_options_latexmk',
         \ 'g:vimtex_view_mupdf_hook_callback',
         \ 'g:vimtex_view_mupdf_hook_view',
         \ 'g:vimtex_view_skim_hook_callback',

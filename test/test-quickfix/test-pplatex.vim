@@ -2,8 +2,6 @@ set nocompatible
 let &rtp = '../..,' . &rtp
 filetype plugin on
 
-if !executable('pplatex') | quitall | endif
-
 let g:vimtex_quickfix_method = 'pplatex'
 
 silent edit test-pplatex.tex

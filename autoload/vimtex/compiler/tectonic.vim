@@ -38,11 +38,11 @@ endfunction
 function! s:compiler.__build_cmd() abort dict " {{{1
   let l:outdir = !empty(self.build_dir)
         \ ? self.build_dir
-        \ : fnamemodify(self.state.tex, ':p:h')
+        \ : fnamemodify(self.target_path, ':p:h')
 
   return 'tectonic ' . join(self.options)
         \ . ' --outdir=' . l:outdir
-        \ . ' ' . vimtex#util#shellescape(self.state.base)
+        \ . ' ' . vimtex#util#shellescape(self.target)
 endfunction
 
 " }}}1

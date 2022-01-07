@@ -1,4 +1,4 @@
-MYVIM ?= nvim --clean --headless
+MYVIM ?= nvim --headless
 
 INMAKE := 1
 export INMAKE
@@ -6,12 +6,9 @@ export INMAKE
 TESTS := $(wildcard *.vim)
 TESTS := $(TESTS:.vim=)
 
-.PHONY: test $(TESTS) test-cleanup
+.PHONY: test $(TESTS)
 
-test: $(TESTS) test-cleanup
+test: $(TESTS)
 
 $(TESTS):
 	@$(MYVIM) -u $@.vim
-
-test-cleanup: $(TESTS)
-	@rm -f nvim_servernames.log
